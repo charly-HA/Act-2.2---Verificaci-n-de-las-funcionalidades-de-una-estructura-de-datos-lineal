@@ -1,0 +1,1 @@
+# Act-2.2---Verificaci-n-de-las-funcionalidades-de-una-estructura-de-datos-lineal
