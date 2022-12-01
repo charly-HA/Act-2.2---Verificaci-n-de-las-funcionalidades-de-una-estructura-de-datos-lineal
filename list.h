@@ -1,8 +1,8 @@
 // =================================================================
 //
 // File: list.h
-// Author:
-// Date:
+// Author: Carlos Hernández Arciniega
+// Date: 01/10/2022
 //
 // =================================================================
 #ifndef DOUBLELINKEDLIST_H
@@ -103,6 +103,7 @@ DoubleLinkedList<T>::~DoubleLinkedList() {
 // Returns if the DoubleLinkedList is empty or not
 //
 // @returns true if the DoubleLinkedList is empty, false otherwise.
+// @complexity O(1)
 // =================================================================
 template <class T>
 bool DoubleLinkedList<T>::empty() const {
@@ -113,6 +114,7 @@ bool DoubleLinkedList<T>::empty() const {
 // Returns the number of items in the DoubleLinkedList.
 //
 // @returns size, the number of items in the DoubleLinkedList.
+// @complexity O(1)
 // =================================================================
 template <class T>
 uint DoubleLinkedList<T>::length() const {
@@ -123,6 +125,7 @@ uint DoubleLinkedList<T>::length() const {
 // Determines if an item is in the DoubleLinkedList.
 //
 // @returns true if val is in the DoubleLinkedList, false otherwise
+// @complexity O(n)
 // =================================================================
 template <class T>
 bool DoubleLinkedList<T>::contains(T val) const {
@@ -140,6 +143,8 @@ bool DoubleLinkedList<T>::contains(T val) const {
 
 // =================================================================
 // Remove all items from the DoubleLinkedList.
+//
+// @complexity O(n)
 // =================================================================
 template <class T>
 void DoubleLinkedList<T>::clear() {
@@ -160,6 +165,7 @@ void DoubleLinkedList<T>::clear() {
 // String representation of the elements in the DoubleLinkedList.
 //
 // @returns a string containing all the elements of the DoubleLinkedList.
+// @complexity O(n)
 // =================================================================
 template <class T>
 std::string DoubleLinkedList<T>::toString() const {
@@ -184,6 +190,7 @@ std::string DoubleLinkedList<T>::toString() const {
 //
 // @returns the object T at the beginning of the DoubleLinkedList.
 // @throws NoSuchElement, if the DoubleLinkedList is empty.
+// @complexity O(1)
 // =================================================================
 template <class T>
 T DoubleLinkedList<T>::front() const {
@@ -199,6 +206,7 @@ T DoubleLinkedList<T>::front() const {
 //
 // @returns the object T at the end of the DoubleLinkedList.
 // @throws NoSuchElement, if the DoubleLinkedList is empty.
+// @complexity O(n)
 // =================================================================
 template <class T>
 T DoubleLinkedList<T>::last() const {
@@ -219,10 +227,23 @@ T DoubleLinkedList<T>::last() const {
 // Returns the value before the first occurrence if certain value.
 //
 // @throws NoSuchelement, if val is not on the list.
+// @complexity O(n)
 // =================================================================
 template <class T>
 T DoubleLinkedList<T>::before(T val) const {
-	
+	Node<T> *p;
+
+	p = head;
+	while (p->next != NULL && p->next->value != val) {
+		p = p->next;
+	}
+
+	if (p->next == NULL) {
+		throw NoSuchElement();
+	}
+
+	val = p->value;
+
 	return val;
 }
 
@@ -230,16 +251,31 @@ T DoubleLinkedList<T>::before(T val) const {
 // Returns the value after the first occurrence of certain value.
 //
 // @throws NoSuchelement, if val is not on the list.
+// @complexity O(n)
 // =================================================================
 template <class T>
 T DoubleLinkedList<T>::after(T val) const {
-	
+	Node<T> *p;
+
+	p = head;
+	while (p->next != NULL && p->value != val) {
+		p = p->next;
+	}
+
+	if (p->next == NULL) {
+		throw NoSuchElement();
+	}
+
+	val = p->next->value;
+
 	return val;
 }
 
 // =================================================================
 // Add an item to the beginning of the DoubleLinkedList. Increase the size of
 // the DoubleLinkedList.
+//
+// @complexity O(1)
 // =================================================================
 template <class T>
 void DoubleLinkedList<T>::push_front(T val) {
@@ -264,6 +300,8 @@ void DoubleLinkedList<T>::push_front(T val) {
 // =================================================================
 // Add an item to the end of the DoubleLinkedList. Increase the size of
 // the DoubleLinkedList.
+//
+// @complexity O(n)
 // =================================================================
 template <class T>
 void DoubleLinkedList<T>::push_back(T val) {
@@ -291,20 +329,61 @@ void DoubleLinkedList<T>::push_back(T val) {
 // Insert an element before the first occurrence of a certain value.
 //
 // @throws NoSuchelement, if lookingFor is not on the list.
+// @complexity O(n)
 // =================================================================
 template <class T>
 void DoubleLinkedList<T>::insert_before(T lookingFor, T newVal) {
-	// TO DO
+	Node<T> *p, *q, *r;
+
+	p = head;
+	while (p->next != NULL && p->value != lookingFor) {
+		p = p->next;
+	}
+
+	if (p->next == NULL && p->value != lookingFor) {
+		throw NoSuchElement();
+	}
+
+	q = new Node<T>(newVal);
+	q->next = p;
+	q->previous = p->previous;
+
+	if (p->previous != NULL) {
+		r = p->previous;
+		r->next = q;
+	} else {
+		head = q;
+	}
+
+	p->previous = q;
+	size++;
 }
 
 // =================================================================
 // Insert an element after the first occurrence of a certain value.
 //
 // @throws NoSuchelement, if lookingFor is not on the list.
+// @complexity O(n)
 // =================================================================
 template <class T>
 void DoubleLinkedList<T>::insert_after(T lookingFor, T newVal) {
-	// TO DO
+	Node<T> *p, *q;
+
+	p = head;
+	while (p->next != NULL && p->value != lookingFor) {
+		p = p->next;
+	}
+
+	if (p->next == NULL && p->value != lookingFor) {
+		throw NoSuchElement();
+	}
+
+	q = new Node<T>(newVal);
+	q->next = p->next;
+	q->previous = p;
+
+	p->next = q;
+	size++;
 }
 
 // =================================================================
@@ -312,6 +391,7 @@ void DoubleLinkedList<T>::insert_after(T lookingFor, T newVal) {
 //
 // @returns the element that was at the beginning of the DoubleLinkedList.
 // @throws NoSuchElement if the DoubleLinkedList is empty
+// @complexity O(1)
 // =================================================================
 template <class T>
 T DoubleLinkedList<T>::pop_front() {
@@ -346,6 +426,7 @@ T DoubleLinkedList<T>::pop_front() {
 //
 // @returns the element that was at the end of the DoubleLinkedList.
 // @throws NoSuchElement if the DoubleLinkedList is empty
+// @complexity O(n)
 // =================================================================
 template <class T>
 T DoubleLinkedList<T>::pop_back() {
